@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_below="@+id/tiempo"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="97dp"
+        android:layout_marginTop="39dp"
+        android:layout_marginEnd="103dp"
+        android:backgroundTint="@color/pink"
+        android:radius="30dp"
+        android:text="Finalizar viaje" />
+
+    <TextView
+        android:id="@+id/ubicacion"
+        android:layout_width="282dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="63dp"
+        android:layout_marginTop="98dp"
+        android:layout_marginEnd="65dp"
+        android:text="Ubicación reportada hace: "
+        android:textAlignment="center"
+        android:textSize="25dp" />
+
+    <TextView
+        android:id="@+id/tiempo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/contador"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="99dp"
+        android:layout_marginTop="27dp"
+        android:layout_marginEnd="101dp"
+        android:text="fecha dd/mm/yyyy hora 00:00"
+        android:textAlignment="center"
+        android:textSize="25dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:background="@color/pink"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:text="Minera"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="35dp" />
+
+    <TextView
+        android:id="@+id/contador"
+        android:layout_width="227dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ubicacion"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="92dp"
+        android:layout_marginTop="29dp"
+        android:layout_marginEnd="92dp"
+        android:text=" segundos"
+        android:textAlignment="center"
+        android:textSize="25dp" />
+
+
+</RelativeLayout>
