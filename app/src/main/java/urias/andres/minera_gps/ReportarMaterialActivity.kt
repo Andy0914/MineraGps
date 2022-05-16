@@ -9,22 +9,15 @@ class ReportarMaterialActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reportar_material)
+        val bundle = intent.extras
+        val dato = bundle?.getString("matricula")
+        editTextMatricula.setText(dato)
         atras.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    MainActivity::class.java
-                )
-            )
+            finish()
         }
 
         reportar.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    MainActivity::class.java
-                )
-            )
+            finish()
         }
 
     }

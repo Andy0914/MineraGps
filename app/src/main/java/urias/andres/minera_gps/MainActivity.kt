@@ -1,6 +1,8 @@
 package urias.andres.minera_gps
 
 import android.Manifest
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
@@ -12,23 +14,23 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import com.google.android.gms.location.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.dialog_matricula.*
+import kotlinx.android.synthetic.main.dialog_matricula.view.*
 import java.util.*
-import kotlin.math.log
 
 
-class MainActivity : AppCompatActivity() {
-
-
+class MainActivity : AppCompatActivity(){
     lateinit var myHandler : Handler
-
+    var matriculaClave: String? = null
+    var pedirMatricula: Boolean = false
 
     private var fusedLocationProvider: FusedLocationProviderClient? = null
     private var lat = 0.0
@@ -61,30 +63,35 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         button.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    ReportarMaterialActivity::class.java
-                )
-            )
+            val intento = Intent(this, ReportarMaterialActivity::class.java)
+            intento.putExtra("matricula", matriculaClave)
+            startActivity(intento)
         }
-
+        if(!pedirMatricula){
+            onCreateDialog()
+        }
         fusedLocationProvider = LocationServices.getFusedLocationProviderClient(this)
 
         checkLocationPermission()
-        var cont=0
+        var cont=-1
         val handler: Handler = Handler()
         val run = object : Runnable {
             @RequiresApi(Build.VERSION_CODES.N)
             override fun run() {
-                if(cont==15){
-                    lastLocation()
-                    cont=0
+                if(pedirMatricula){
+                    if(cont==-1){
+                        cont=0
+                        lastLocation()
+                    }
+                    if(cont==15){
+                        lastLocation()
+                        cont=0
+                    }
+                    else{
+                        cont++
+                    }
+                    contador.setText(""+cont+" segundos")
                 }
-                else{
-                    cont++
-                }
-                contador.setText(""+cont+" segundos")
                 handler.postDelayed(this,1000)
             }
         }
@@ -111,7 +118,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onResume() {
         super.onResume()
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -124,10 +130,8 @@ class MainActivity : AppCompatActivity() {
                 Looper.getMainLooper()
             )
         }
-        lastLocation()
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onPause() {
         super.onPause()
         if (ContextCompat.checkSelfPermission(
@@ -139,7 +143,6 @@ class MainActivity : AppCompatActivity() {
 
             fusedLocationProvider?.removeLocationUpdates(locationCallback)
         }
-        lastLocation()
     }
 
     private fun checkLocationPermission() {
@@ -305,5 +308,27 @@ class MainActivity : AppCompatActivity() {
         private const val MY_PERMISSIONS_REQUEST_BACKGROUND_LOCATION = 66
     }
 
-
+    fun onCreateDialog() {
+            // Build the dialog and set up the button click handlers
+        val context = this
+        val builder = AlertDialog.Builder(context)
+        val view = layoutInflater.inflate(R.layout.dialog_matricula, null)
+        builder.setView(view)
+        builder.setPositiveButton("Iniciar sesión") { dialog, id ->
+            // Send the positive button event back to the host activity
+            var isValid = true
+            if (view.matricula.text.isBlank()) {
+                isValid = false
+            }
+            if (isValid) {
+                val valor = view.matricula.text.toString()
+                matriculaClave = valor
+                pedirMatricula = true
+            }
+            if (!isValid) {
+                dialog.dismiss()
+            }
+        }
+        builder.show()
+    }
 }

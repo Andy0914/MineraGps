@@ -36,7 +36,8 @@
         android:layout_marginEnd="100dp"
         android:ems="10"
         android:hint="Matricula"
-        android:inputType="text" />
+        android:editable="false"
+        android:inputType="none" />
 
     <EditText
         android:id="@+id/editTextCantidad"
