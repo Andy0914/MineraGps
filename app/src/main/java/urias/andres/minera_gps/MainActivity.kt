@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity(){
                         cont=0
                         lastLocation()
                     }
-                    if(cont==15){
+                    if(cont==5){
                         lastLocation()
                         cont=0
                     }
