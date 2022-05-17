@@ -1,29 +1,30 @@
 package urias.andres.minera_gps
 
 import android.Manifest
-import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
 import android.location.Location
 import android.net.Uri
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
+import android.os.StrictMode.ThreadPolicy
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import com.google.android.gms.location.*
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.dialog_matricula.*
 import kotlinx.android.synthetic.main.dialog_matricula.view.*
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.lang.Exception
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 
 
@@ -32,28 +33,54 @@ class MainActivity : AppCompatActivity(){
     var matriculaClave: String? = null
     var pedirMatricula: Boolean = false
 
+    private var serverBasepath = "http://192.168.100.5:8080"
     private var fusedLocationProvider: FusedLocationProviderClient? = null
     private var lat = 0.0
     private var long = 0.0
     private val locationRequest: LocationRequest = LocationRequest.create().apply {
         interval = 30
         fastestInterval = 10
-        priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         maxWaitTime = 60
     }
 
     private var locationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val locationList = locationResult.locations
-            if (locationList.isNotEmpty()) {
+            if (locationList.isNotEmpty() && matriculaClave !== null && matriculaClave!!.length > 0) {
                 //The last location in the list is the newest
                 val location = locationList.last()
-                Toast.makeText(
-                    this@MainActivity,
-                    "Got Location: " + location.toString(),
-                    Toast.LENGTH_LONG
-                )
-                    .show()
+                val ubicacion = ReportarUbicacionJson()
+                ubicacion.latitud = location.latitude
+                ubicacion.longitud = location.longitude
+                ubicacion.radio = location.accuracy
+
+                // Reportar ubicacion al servidor
+                val json = Gson().toJson(ubicacion)
+
+                try {
+                    val url = URL(serverBasepath + "/posiciones/" + matriculaClave)
+                    with(url.openConnection() as HttpURLConnection) {
+                        requestMethod = "POST"
+                        setRequestProperty("Content-Type", "application/json")
+
+                        val wr = OutputStreamWriter(getOutputStream());
+                        wr.write(json);
+                        wr.flush();
+
+                        BufferedReader(InputStreamReader(inputStream)).use {
+                            val response = StringBuffer()
+
+                            var inputLine = it.readLine()
+                            while (inputLine != null) {
+                                response.append(inputLine)
+                                inputLine = it.readLine()
+                            }
+                        }
+                    }
+                }catch(e: Exception){
+
+                }
             }
 
         }
@@ -62,11 +89,16 @@ class MainActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        button.setOnClickListener {
+        /* button.setOnClickListener {
             val intento = Intent(this, ReportarMaterialActivity::class.java)
             intento.putExtra("matricula", matriculaClave)
             startActivity(intento)
+        }*/
+        if (Build.VERSION.SDK_INT > 9) {
+            val policy = ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
         }
+
         if(!pedirMatricula){
             onCreateDialog()
         }

@@ -6,20 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_below="@+id/tiempo"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="97dp"
-        android:layout_marginTop="39dp"
-        android:layout_marginEnd="103dp"
-        android:backgroundTint="@color/pink"
-        android:radius="30dp"
-        android:text="Finalizar viaje" />
-
     <TextView
         android:id="@+id/ubicacion"
         android:layout_width="282dp"
